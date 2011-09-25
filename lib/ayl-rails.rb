@@ -1,0 +1,1 @@
+require 'ayl-rails/railtie'
