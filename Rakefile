@@ -18,7 +18,7 @@ Jeweler::Tasks.new do |gem|
   gem.homepage = "http://github.com/j0hnds/ayl-rails"
   gem.license = "MIT"
   gem.summary = %Q{Ayl Extension for Rails ActiveRecord support.}
-  gem.description = %Q{Ayl Extension for Rails ActiveRecord support.}
+  gem.description = %Q{Partner to ayl to allow ActiveRecord after_* hooks to be made asynchronous.}
   gem.email = "j0hnds@gmail.com"
   gem.authors = ["j0hnds@gmail.com"]
   # dependencies defined in Gemfile

@@ -1,6 +1,25 @@
 = ayl-rails
 
-Description goes here.
+This gem partners with the {ayl}[https://github.com/j0hnds/ayl] gem to allow you to configure your standard ActiveRecord after_* hooks to be asynchronous.
+
+Just register this gem in your Gemfile like:
+
+    gem 'ayl-rails'
+
+Then in your model, you can convert your after_* hooks to be asynchronous.
+
+For example:
+
+    after_save :method # or,
+    after_create :method # or,
+    after_update :method
+
+becomes
+
+    ayl_after_save :method #,
+    ayl_after_create :method #,
+    ayl_after_update :method
+
 
 == Contributing to ayl-rails
  
