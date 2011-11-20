@@ -37,6 +37,7 @@ pkg
 #*~
 #\#*
 #.\#*
+.emacs_project
 
 # For vim:
 #*.swp
