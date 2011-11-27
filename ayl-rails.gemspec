@@ -5,12 +5,12 @@
 
 Gem::Specification.new do |s|
   s.name = "ayl-rails"
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["j0hnds@gmail.com"]
-  s.date = "2011-11-20"
-  s.description = "Ayl Extension for Rails ActiveRecord support."
+  s.date = "2011-11-27"
+  s.description = "Partner to ayl to allow ActiveRecord after_* hooks to be made asynchronous."
   s.email = "j0hnds@gmail.com"
   s.extra_rdoc_files = [
     "LICENSE.txt",
@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "ayl-rails.gemspec",
     "lib/ayl-rails.rb",
     "lib/ayl-rails/railtie.rb",
     "spec/rails_extensions_spec.rb",
