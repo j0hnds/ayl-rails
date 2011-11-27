@@ -31,13 +31,13 @@ module Ayl
         def add_ayl_hook(hook, *args, &block)
           if args && args.first.is_a?(Symbol)
             method = args.shift
-            ayl_hooks[hook] << lambda{|o| o.send(method)}
+            ayl_hooks(*args)[hook] << lambda{|o| o.send(method)}
           else
-            ayl_hooks[hook] << block
+            ayl_hooks(*args)[hook] << block
           end
         end
 
-        def ayl_hooks
+        def ayl_hooks(*args)
           @ayn_hooks ||= Hash.new do |hash, hook|
             # Remember: this block is invoked only once for each
             # access of a key that has not been used before.
@@ -58,7 +58,7 @@ module Ayl
             # So, the self.class target for the ayl_send is because we
             # need to call the ayl_send method at the singleton level.
             #
-            send(hook) { |o| self.class.ayl_send(ahook, o) }
+            send(hook, *args) { |o| self.class.ayl_send(ahook, o) }
 
             # This is for the worker's benefit
             #

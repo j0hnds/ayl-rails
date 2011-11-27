@@ -60,6 +60,30 @@ class AfterCreate::MyModel < ActiveRecord::Base
   end
 end
 
+module ConditionalCallbacks; end
+
+class ConditionalCallbacks::MyModel < ActiveRecord::Base
+  attr_accessor :do_callback
+
+  ayl_after_create :handle_after_create, :if => :should_do_callback?
+
+  ayl_after_update :handle_after_update, :if => :should_do_callback?
+
+  private
+
+  def handle_after_create
+    WhatHappened.instance << "handle after create"
+  end
+
+  def handle_after_update
+    WhatHappened.instance << "handle after update"
+  end
+
+  def should_do_callback?
+    @do_callback
+  end
+end
+
 describe "Rails Extensions" do
 
   before(:each) do
@@ -164,6 +188,25 @@ describe "Rails Extensions" do
       WhatHappened.instance.what_ran.should == [ "the static async method(first, second)" ]
     end
 
+  end
+
+  context "when using conditional callbacks" do
+
+    it "should invoke the after_create and after_update callbacks when the flag is true" do
+      model = ConditionalCallbacks::MyModel.new(:name => "spud")
+      model.do_callback = true # Should allow after_create to be called, but not after_update
+      model.save
+      model.update_attribute(:name, "dog")
+      WhatHappened.instance.what_ran.should == [ "handle after create", "handle after update" ]
+    end
+
+    it "should not invoke the after_create or after_update callbacks when the flag is false" do
+      model = ConditionalCallbacks::MyModel.new(:name => "spud")
+      model.do_callback = false # Should allow after_update to be called, but not after_create
+      model.save
+      model.update_attribute(:name, "dog")
+      WhatHappened.instance.what_ran.should be_blank
+    end
   end
 
 end
