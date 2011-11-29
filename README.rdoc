@@ -20,6 +20,28 @@ becomes
     ayl_after_create :method #,
     ayl_after_update :method
 
+In addition, the callback definitions can be parameterized in a couple of different ways.
+
+First, you can make the callbacks conditional in the same way that you can make standard ActiveRecord callbacks conditional:
+
+    ayl_after_create :method, :if => :should_it_be_called?
+
+In this example, the method will only be invoked on create if the method "should_it_be_called?" responds with true.
+Alternatively, something like:
+
+    ayl_after_create :method, :unless => :should_it_be_called?
+
+In this example, the method will only be invoked on create if the method "should_it_be_called? responds with false.
+
+You can also specify message parameters to control how the asynchronous message is processed. For example,
+
+    ayl_after_create :method, :message_options => { :delay => 20 }
+
+will request that the underlying queuing engine will delay processing of the message for 20 seconds.
+
+Naturally, the two types of parameters can be combined for a callback:
+
+    ayl_after_create :method, :message_options => { :delay => 20 }, :unless => :it_should_not_be_called?
 
 == Contributing to ayl-rails
  
