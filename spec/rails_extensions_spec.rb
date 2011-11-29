@@ -153,7 +153,7 @@ describe "Rails Extensions" do
     it "should represent the instance of a particular model using a 'find'" do
       model = InstanceMethod::MyModel.create(:name => 'loud')
 
-      model.to_rrepr.should == "InstanceMethod::MyModel.find(#{model.id})"
+      model.to_rrepr.should == "InstanceMethod::MyModel.unscoped.find(#{model.id})"
     end
 
     it "should invoke the instance method asynchronously with no options" do
