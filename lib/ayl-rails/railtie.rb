@@ -31,20 +31,28 @@ module Ayl
         def add_ayl_hook(hook, *args, &block)
           if args && args.first.is_a?(Symbol)
             method = args.shift
-            ayl_hooks(*args)[hook] << lambda{|o| o.send(method)}
+            ayl_hooks(hook, *args) << lambda{|o| o.send(method)}
           else
-            ayl_hooks(*args)[hook] << block
+            ayl_hooks(hook, *args) << block
           end
         end
 
-        def ayl_hooks(*args)
-          @ayn_hooks ||= Hash.new do |hash, hook|
+        def ayl_hooks(hook_key, *args)
+          @ayl_hooks ||= Hash.new { |hash, hook| hash[hook] = [] }
+
+          message_options = {}
+          if args && args.first.is_a?(Hash) && args.first.has_key?(:message_options)
+            message_options = args.first[:message_options]
+            args.first.delete(:message_options)
+          end
+
+          if not @ayl_hooks.has_key?(hook_key)
             # Remember: this block is invoked only once for each
             # access of a key that has not been used before.
             
             # Define the name of a method that the standard hook
             # method will call when the standard hook fires
-            ahook = "_ayl_#{hook}".to_sym
+            ahook = "_ayl_#{hook_key}".to_sym
             
             # This is for the producer's benefit
             # So, this is the equivalent of performing the following
@@ -58,24 +66,25 @@ module Ayl
             # So, the self.class target for the ayl_send is because we
             # need to call the ayl_send method at the singleton level.
             #
-            send(hook, *args) { |o| self.class.ayl_send(ahook, o) }
+            send(hook_key, *args) { |o| self.class.ayl_send_opts(ahook, message_options, o) }
 
             # This is for the worker's benefit
             #
             # This defines the instance method
             method_code = <<-EOF
               def #{ahook}(o)
-                _run_ayl_hooks(#{hook.inspect}, o)
+                _run_ayl_hooks(#{hook_key.inspect}, o)
               end
             EOF
             instance_eval(method_code, __FILE__, __LINE__ - 1)
-
-            hash[hook] = []
           end
+
+          # Return the array associated with the hook key
+          @ayl_hooks[hook_key]
         end
 
         def _run_ayl_hooks(hook, o)
-          ayl_hooks[hook].each { |b| b.call(o) }
+          ayl_hooks(hook).each { |b| b.call(o) }
         end
 
       end

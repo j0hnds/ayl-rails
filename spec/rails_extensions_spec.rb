@@ -60,6 +60,15 @@ class AfterCreate::MyModel < ActiveRecord::Base
   end
 end
 
+module MessageOptions; end
+
+class MessageOptions::MyModel < ActiveRecord::Base
+
+  ayl_after_create :handle_after_create, :message_options => { :delay => 20 }
+  ayl_after_update :handle_after_update
+
+end
+
 module ConditionalCallbacks; end
 
 class ConditionalCallbacks::MyModel < ActiveRecord::Base
@@ -67,7 +76,7 @@ class ConditionalCallbacks::MyModel < ActiveRecord::Base
 
   ayl_after_create :handle_after_create, :if => :should_do_callback?
 
-  ayl_after_update :handle_after_update, :if => :should_do_callback?
+  ayl_after_update :handle_after_update, :unless => :should_do_callback?
 
   private
 
@@ -192,21 +201,34 @@ describe "Rails Extensions" do
 
   context "when using conditional callbacks" do
 
-    it "should invoke the after_create and after_update callbacks when the flag is true" do
+    it "should invoke the after_create but not the after_update callbacks when the flag is true" do
       model = ConditionalCallbacks::MyModel.new(:name => "spud")
       model.do_callback = true # Should allow after_create to be called, but not after_update
       model.save
       model.update_attribute(:name, "dog")
-      WhatHappened.instance.what_ran.should == [ "handle after create", "handle after update" ]
+      WhatHappened.instance.what_ran.should == [ "handle after create" ]
     end
 
-    it "should not invoke the after_create or after_update callbacks when the flag is false" do
+    it "should invoke the after_update but not the after_create callbacks when the flag is false" do
       model = ConditionalCallbacks::MyModel.new(:name => "spud")
       model.do_callback = false # Should allow after_update to be called, but not after_create
       model.save
       model.update_attribute(:name, "dog")
-      WhatHappened.instance.what_ran.should be_blank
+      WhatHappened.instance.what_ran.should == [ "handle after update" ]
     end
+  end
+
+  context "when using message parameters" do
+
+    it "should pass the message options to the ayl_after_create, but not to the ayl_after_update" do
+      model = MessageOptions::MyModel.new(:name => "spud")
+      MessageOptions::MyModel.should_receive(:ayl_send_opts).with(:_ayl_after_create, { :delay => 20 }, model)
+      MessageOptions::MyModel.should_receive(:ayl_send_opts).with(:_ayl_after_update, { }, model)
+
+      model.save
+      model.update_attribute(:name, "dog")
+    end
+
   end
 
 end
