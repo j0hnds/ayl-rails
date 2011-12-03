@@ -28,6 +28,18 @@ module Ayl
           class_eval(method_code, __FILE__, __LINE__ - 1)
         end
 
+        def skip_ayl_hooks
+          @ayl_skip_hooks ||= Hash.new(false)
+        end
+
+        def skip_ayl_callback(hook)
+          skip_ayl_hooks[hook] = true
+        end
+
+        def skip_ayl_callbacks
+          HOOKS.each { | hook | skip_ayl_callback(hook) }
+        end
+
         def add_ayl_hook(hook, *args, &block)
           if args && args.first.is_a?(Symbol)
             method = args.shift
@@ -66,7 +78,7 @@ module Ayl
             # So, the self.class target for the ayl_send is because we
             # need to call the ayl_send method at the singleton level.
             #
-            send(hook_key, *args) { |o| self.class.ayl_send_opts(ahook, message_options, o) }
+            send(hook_key, *args) { |o| self.class.ayl_send_opts(ahook, message_options, o) unless self.class.skip_ayl_hooks[hook_key] }
 
             # This is for the worker's benefit
             #

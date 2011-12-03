@@ -69,6 +69,31 @@ class MessageOptions::MyModel < ActiveRecord::Base
 
 end
 
+module AllCallbacks; end
+
+class AllCallbacks::MyModel < ActiveRecord::Base
+  ayl_after_save :handle_after_save
+
+  ayl_after_create :handle_after_create
+
+  ayl_after_update :handle_after_update
+
+  private
+
+  def handle_after_save
+    WhatHappened.instance << "handle after save"
+  end
+
+  def handle_after_create
+    WhatHappened.instance << "handle after create"
+  end
+
+  def handle_after_update
+    WhatHappened.instance << "handle after save"
+  end
+
+end
+
 module ConditionalCallbacks; end
 
 class ConditionalCallbacks::MyModel < ActiveRecord::Base
@@ -153,6 +178,25 @@ describe "Rails Extensions" do
       model.update_attribute(:name, 'joan')
 
       WhatHappened.instance.what_ran.should be_nil
+    end
+
+    it "should not allow the callbacks to be run when the skip_ayl_callback is specified" do
+      AfterCreate::MyModel.skip_ayl_callback(:after_create)
+
+      model = AfterCreate::MyModel.new(:name => 'spud')
+      model.save.should be_true
+
+      WhatHappened.instance.what_ran.should_not be_present
+    end
+
+    it "should not allow any callbacks to be run when the skip_ayl_callbacks is specified" do
+      AllCallbacks::MyModel.skip_ayl_callbacks
+
+      model = AllCallbacks::MyModel.new(:name => 'spud')
+      model.save.should be_true
+      model.update_attribute(:name, 'joan')
+
+      WhatHappened.instance.what_ran.should_not be_present
     end
 
   end
