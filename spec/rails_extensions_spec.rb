@@ -60,6 +60,20 @@ class AfterCreate::MyModel < ActiveRecord::Base
   end
 end
 
+module AfterCommit; end
+
+class AfterCommit::MyModel < ActiveRecord::Base
+
+  ayl_after_commit :handle_after_commit
+
+  private
+
+  def handle_after_commit
+    WhatHappened.instance << "handle after commit"
+  end
+
+end
+
 module MessageOptions; end
 
 class MessageOptions::MyModel < ActiveRecord::Base
@@ -78,6 +92,8 @@ class AllCallbacks::MyModel < ActiveRecord::Base
 
   ayl_after_update :handle_after_update
 
+  ayl_after_commit :handle_after_commit
+
   private
 
   def handle_after_save
@@ -90,6 +106,10 @@ class AllCallbacks::MyModel < ActiveRecord::Base
 
   def handle_after_update
     WhatHappened.instance << "handle after save"
+  end
+
+  def handle_after_commit
+    WhatHappened.instance << "handle after commit"
   end
 
 end
@@ -178,6 +198,19 @@ describe "Rails Extensions" do
       model.update_attribute(:name, 'joan')
 
       WhatHappened.instance.what_ran.should be_nil
+    end
+
+    it "the ayl_after_commit handler should fire when the model is committed" do
+      
+      model = AfterCommit::MyModel.new(:name => 'spud')
+      model.save.should be_true
+
+      WhatHappened.instance.what_ran.should == [ 'handle after commit' ]
+      WhatHappened.instance.clear
+
+      model.update_attribute(:name, 'joan')
+
+      WhatHappened.instance.what_ran.should == [ 'handle after commit' ]
     end
 
     it "should not allow the callbacks to be run when the skip_ayl_callback is specified" do

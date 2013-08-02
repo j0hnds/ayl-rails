@@ -3,7 +3,7 @@ module Ayl
   class Railtie < ::Rails::Railtie
 
     # The hooks to be created/installed on ActiveRecord::Base
-    HOOKS = [ :after_update, :after_create, :after_save ]
+    HOOKS = [ :after_update, :after_create, :after_save, :after_commit ]
 
     initializer "Ayl::Railtie.extend" do
       # Want the ayl_send/opts at the instance level
