@@ -40,7 +40,7 @@ pkg
 .emacs_project
 
 # For vim:
-#*.swp
+*.swp
 
 # For redcar:
 #.redcar
@@ -50,3 +50,6 @@ pkg
 
 # For rvm
 .rvmrc
+.ruby-version
+.ruby-gemset
+

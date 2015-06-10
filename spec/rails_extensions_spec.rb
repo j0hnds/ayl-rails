@@ -165,71 +165,71 @@ describe "Rails Extensions" do
     it "the ayl_after_save handler should fire when the model is saved" do
       
       model = AfterSave::MyModel.new(:name => 'spud')
-      model.save.should be_true
+      expect(model.save).to be true
 
-      WhatHappened.instance.what_ran.should == [ 'handle after save' ] 
+      expect(WhatHappened.instance.what_ran).to eq([ 'handle after save' ])
       WhatHappened.instance.clear
 
       model.update_attribute(:name, 'joan')
 
-      WhatHappened.instance.what_ran.should == [ 'handle after save' ] 
+      expect(WhatHappened.instance.what_ran).to eq([ 'handle after save' ]) 
     end
 
     it "the ayl_after_update handler should fire when the model is updated" do
       
       model = AfterUpdate::MyModel.new(:name => 'spud')
-      model.save.should be_true
+      expect(model.save).to be true
 
-      WhatHappened.instance.what_ran.should be_nil
+      expect(WhatHappened.instance.what_ran).to be_nil
 
       model.update_attribute(:name, 'joan')
 
-      WhatHappened.instance.what_ran.should == [ 'handle after update' ]
+      expect(WhatHappened.instance.what_ran).to eq([ 'handle after update' ])
     end
 
     it "the ayl_after_create handler should fire when the model is created" do
       
       model = AfterCreate::MyModel.new(:name => 'spud')
-      model.save.should be_true
+      expect(model.save).to be true
 
-      WhatHappened.instance.what_ran.should == [ 'handle after create' ]
+      expect(WhatHappened.instance.what_ran).to eq([ 'handle after create' ])
       WhatHappened.instance.clear
 
       model.update_attribute(:name, 'joan')
 
-      WhatHappened.instance.what_ran.should be_nil
+      expect(WhatHappened.instance.what_ran).to be_nil
     end
 
     it "the ayl_after_commit handler should fire when the model is committed" do
       
       model = AfterCommit::MyModel.new(:name => 'spud')
-      model.save.should be_true
+      expect(model.save).to be true
 
-      WhatHappened.instance.what_ran.should == [ 'handle after commit' ]
+      expect(WhatHappened.instance.what_ran).to eq([ 'handle after commit' ])
       WhatHappened.instance.clear
 
       model.update_attribute(:name, 'joan')
 
-      WhatHappened.instance.what_ran.should == [ 'handle after commit' ]
+      expect(WhatHappened.instance.what_ran).to eq([ 'handle after commit' ])
     end
 
     it "should not allow the callbacks to be run when the skip_ayl_callback is specified" do
       AfterCreate::MyModel.skip_ayl_callback(:after_create)
 
       model = AfterCreate::MyModel.new(:name => 'spud')
-      model.save.should be_true
+      expect(model.save).to be true
 
-      WhatHappened.instance.what_ran.should_not be_present
+      expect(WhatHappened.instance.what_ran).not_to be_present
     end
 
     it "should not allow any callbacks to be run when the skip_ayl_callbacks is specified" do
       AllCallbacks::MyModel.skip_ayl_callbacks
 
       model = AllCallbacks::MyModel.new(:name => 'spud')
-      model.save.should be_true
+      expect(model.save).to be true
       model.update_attribute(:name, 'joan')
 
-      WhatHappened.instance.what_ran.should_not be_present
+      expect(WhatHappened.instance.what_ran).not_to be_present
     end
 
   end
@@ -239,7 +239,7 @@ describe "Rails Extensions" do
     it "should represent the instance of a particular model using a 'find'" do
       model = InstanceMethod::MyModel.create(:name => 'loud')
 
-      model.to_rrepr.should == "InstanceMethod::MyModel.unscoped.find(#{model.id})"
+      expect(model.to_rrepr).to eq("InstanceMethod::MyModel.unscoped.find(#{model.id})")
     end
 
     it "should invoke the instance method asynchronously with no options" do
@@ -247,7 +247,7 @@ describe "Rails Extensions" do
 
       model.ayl_send(:the_async_method, "first", "second")
       
-      WhatHappened.instance.what_ran.should == [ "the instance async method(first, second)" ]
+      expect(WhatHappened.instance.what_ran).to eq([ "the instance async method(first, second)" ])
     end
 
     it "should invoke the instance method asynchronously with options" do
@@ -255,7 +255,7 @@ describe "Rails Extensions" do
 
       model.ayl_send_opts(:the_async_method, {}, "first", "second")
       
-      WhatHappened.instance.what_ran.should == [ "the instance async method(first, second)" ]
+      expect(WhatHappened.instance.what_ran).to eq([ "the instance async method(first, second)" ])
     end
 
   end
@@ -265,13 +265,13 @@ describe "Rails Extensions" do
     it "should invoke the static method asynchronously with no options" do
       ClassMethod::MyModel.ayl_send(:the_async_method, "first", "second")
       
-      WhatHappened.instance.what_ran.should == [ "the static async method(first, second)" ]
+      expect(WhatHappened.instance.what_ran).to eq([ "the static async method(first, second)" ])
     end
 
     it "should invoke the instance method asynchronously with options" do
       ClassMethod::MyModel.ayl_send_opts(:the_async_method, {}, "first", "second")
       
-      WhatHappened.instance.what_ran.should == [ "the static async method(first, second)" ]
+      expect(WhatHappened.instance.what_ran).to eq([ "the static async method(first, second)" ])
     end
 
   end
@@ -283,7 +283,7 @@ describe "Rails Extensions" do
       model.do_callback = true # Should allow after_create to be called, but not after_update
       model.save
       model.update_attribute(:name, "dog")
-      WhatHappened.instance.what_ran.should == [ "handle after create" ]
+      expect(WhatHappened.instance.what_ran).to eq([ "handle after create" ])
     end
 
     it "should invoke the after_update but not the after_create callbacks when the flag is false" do
@@ -291,7 +291,7 @@ describe "Rails Extensions" do
       model.do_callback = false # Should allow after_update to be called, but not after_create
       model.save
       model.update_attribute(:name, "dog")
-      WhatHappened.instance.what_ran.should == [ "handle after update" ]
+      expect(WhatHappened.instance.what_ran).to eq([ "handle after update" ])
     end
   end
 
@@ -299,8 +299,8 @@ describe "Rails Extensions" do
 
     it "should pass the message options to the ayl_after_create, but not to the ayl_after_update" do
       model = MessageOptions::MyModel.new(:name => "spud")
-      MessageOptions::MyModel.should_receive(:ayl_send_opts).with(:_ayl_after_create, { :delay => 20 }, model)
-      MessageOptions::MyModel.should_receive(:ayl_send_opts).with(:_ayl_after_update, { }, model)
+      expect(MessageOptions::MyModel).to receive(:ayl_send_opts).with(:_ayl_after_create, { :delay => 20 }, model)
+      expect(MessageOptions::MyModel).to receive(:ayl_send_opts).with(:_ayl_after_update, { }, model)
 
       model.save
       model.update_attribute(:name, "dog")
