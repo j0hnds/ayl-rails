@@ -55,6 +55,6 @@ Naturally, the two types of parameters can be combined for a callback:
 
 == Copyright
 
-Copyright (c) 2011 j0hnds@gmail.com. See LICENSE.txt for
+Copyright (c) 2011-2015 j0hnds@gmail.com. See LICENSE.txt for
 further details.
 
