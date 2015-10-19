@@ -1,3 +1,4 @@
+{<img src="https://travis-ci.org/j0hnds/ayl-rails.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/j0hnds/ayl-rails]
 = ayl-rails
 
 This gem partners with the {ayl}[https://github.com/j0hnds/ayl] gem to allow you to configure your standard ActiveRecord after_* hooks to be asynchronous.
